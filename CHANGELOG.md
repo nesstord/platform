@@ -5,6 +5,62 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## 13.7.1 - 2022-10-31
+
+### Fixed
+
+- Do not process the visual value of the filter when the parameter is missing
+
+
+## 13.7.0 - 2022-10-27
+
+### Added
+
+- Add display custom filter value [#2416](https://github.com/orchidsoftware/platform/pull/2416)
+
+### Changed
+
+- Usage arrow functions [#2415](https://github.com/orchidsoftware/platform/pull/2415)
+- Usage PHP 8 functions
+
+### Fixed
+
+- Align icons filter for `Selection`
+
+## 13.6.1 - 2022-10-21
+
+### Changed
+
+- Better performance icons loader [#2410](https://github.com/orchidsoftware/platform/issues/2410)
+
+## 13.6.0 - 2022-10-09
+
+### Added
+
+- Usage Laravel Pint for code style [#2397](https://github.com/orchidsoftware/platform/pull/2397)
+- Hebrew translation [#2393](https://github.com/orchidsoftware/platform/pull/2393)
+
+### Changed
+
+- Value of select to not use a strict type
+- Better example charts [#2379](https://github.com/orchidsoftware/platform/issues/2379)
+
+### Fixed
+
+- Nullable checkbox element [2298](https://github.com/orchidsoftware/platform/issues/2298)
+
+## 13.5.0 - 2022-10-02
+
+### Added
+
+- Added attribute `inputmode` for input tag [#2390](https://github.com/orchidsoftware/platform/pull/2390)
+
+## 13.4.0 - 2022-09-27
+
+### Added
+
+- Using charts as templates [#2379](https://github.com/orchidsoftware/platform/issues/2379)
+
 ## 13.3.0 - 2022-09-19
 
 ### Added

@@ -77,6 +77,13 @@ class TD extends Cell
     protected $filterOptions = [];
 
     /**
+     * Callable return filter value in column
+     *
+     * @var callable
+     */
+    protected $callbackFilterValue;
+
+    /**
      * @param string|int $width
      *
      * @return TD
@@ -101,14 +108,31 @@ class TD extends Cell
     }
 
     /**
-     * @param string|\Orchid\Screen\Field $filter
+     * @param callable $callable
+     *
+     * @return void
+     */
+    public function filterValue(callable $callable): self
+    {
+        $this->callbackFilterValue = $callable;
+
+        return $this;
+    }
+
+    /**
+     * @param string                 $filter
+     * @param iterable|callable|null $options
      *
      * @return TD
      */
-    public function filter($filter = self::FILTER_TEXT, iterable $options = null): self
+    public function filter($filter = self::FILTER_TEXT, $options = null): self
     {
-        if ($options) {
+        if (is_iterable($options)) {
             $this->filterOptions($options);
+        }
+
+        if (is_callable($options)) {
+            $this->callbackFilterValue = $options;
         }
 
         $this->filter = $filter;
@@ -235,23 +259,13 @@ class TD extends Cell
      */
     protected function detectConstantFilter(string $filter): Field
     {
-        switch ($filter) {
-            case self::FILTER_DATE_RANGE:
-                $input = DateRange::make();
-                break;
-            case self::FILTER_NUMBER_RANGE:
-                $input = NumberRange::make();
-                break;
-            case self::FILTER_SELECT:
-                $input = Select::make()->options($this->filterOptions)->multiple();
-                break;
-            case self::FILTER_DATE:
-                $input = DateTimer::make()->inline()->format('Y-m-d');
-                break;
-            default:
-                $input = Input::make()->type($filter);
-                break;
-        }
+        $input = match ($filter) {
+            self::FILTER_DATE_RANGE   => DateRange::make(),
+            self::FILTER_NUMBER_RANGE => NumberRange::make(),
+            self::FILTER_SELECT       => Select::make()->options($this->filterOptions)->multiple(),
+            self::FILTER_DATE         => DateTimer::make()->inline()->format('Y-m-d'),
+            default                   => Input::make()->type($filter),
+        };
 
         return $input;
     }
@@ -344,7 +358,7 @@ class TD extends Cell
     {
         $query = request()->collect()->put('sort', revert_sort($this->column))->toArray();
 
-        return url()->current() . '?' . http_build_query($query);
+        return url()->current().'?'.http_build_query($query);
     }
 
     /**
@@ -354,9 +368,7 @@ class TD extends Cell
      */
     public static function isShowVisibleColumns($columns): bool
     {
-        return collect($columns)->filter(function ($column) {
-            return $column->isAllowUserHidden();
-        })->isNotEmpty();
+        return collect($columns)->filter(fn ($column) => $column->isAllowUserHidden())->isNotEmpty();
     }
 
     /**
@@ -374,15 +386,22 @@ class TD extends Cell
     protected function buildFilterString(): ?string
     {
         $filter = get_filter($this->column);
+
+        if ($filter === null) {
+            return null;
+        }
+
+        if ($this->callbackFilterValue !== null) {
+            return call_user_func($this->callbackFilterValue, $filter);
+        }
+
         if (is_array($filter)) {
             if (isset($filter['start']) || isset($filter['end'])) {
-                return ($filter['start'] ?? "") . ' - ' . ($filter['end'] ?? "");
+                return ($filter['start'] ?? '').' - '.($filter['end'] ?? '');
             }
 
             if ($this->filterOptions) {
-                $filter = array_map(function ($val) {
-                    return $this->filterOptions[$val] ?? $val;
-                }, $filter);
+                $filter = array_map(fn ($val) => $this->filterOptions[$val] ?? $val, $filter);
             }
 
             return implode(', ', $filter);

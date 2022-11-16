@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Orchid\Tests\Console;
 
+use Generator;
+use Illuminate\Support\Str;
 use Orchid\Platform\Models\User;
 use Orchid\Support\Facades\Dashboard;
 use Orchid\Tests\TestConsoleCase;
@@ -11,64 +13,38 @@ use Orchid\Tests\TestConsoleCase;
 class ArtisanTest extends TestConsoleCase
 {
     /**
-     * debug: php vendor/bin/phpunit  --filter= ArtisanTest tests\\Feature\\ArtisanTest --debug.
-     *
-     * @var
+     * @return Generator
      */
-    public function testArtisanOrchidChart(): void
+    public function artisanOrchidMake(): Generator
     {
-        $this->artisan('orchid:chart', ['name' => $this->generateNameFromMethod()])
-            ->expectsOutputToContain('Chart created successfully.')
-            ->assertExitCode(0);
+        yield ['Chart', 'orchid:chart', 'Orchid/Layouts/'];
+        yield ['Table', 'orchid:table', 'Orchid/Layouts/'];
+        yield ['Rows', 'orchid:rows', 'Orchid/Layouts/'];
+        yield ['Selection', 'orchid:selection', 'Orchid/Layouts/'];
+        yield ['Listener', 'orchid:listener', 'Orchid/Layouts/'];
+        yield ['TabMenu', 'orchid:tab-menu', 'Orchid/Layouts/'];
+
+        yield ['Presenter', 'orchid:presenter', 'Orchid/Presenters/'];
+        yield ['Screen', 'orchid:screen', 'Orchid/Screens/'];
+        yield ['Filter', 'orchid:filter', 'Orchid/Filters/'];
     }
 
-    public function testArtisanOrchidTable(): void
+    /**
+     * @param string $name
+     * @param string $command
+     * @param string $path
+     *
+     * @dataProvider artisanOrchidMake
+     */
+    public function testArtisanOrchidMake(string $name, string $command, string $path): void
     {
-        $this->artisan('orchid:table', ['name' => $this->generateNameFromMethod()])
-            ->expectsOutputToContain('Table created successfully.')
-            ->assertExitCode(0);
-    }
+        $file = Str::random();
 
-    public function testArtisanOrchidScreen(): void
-    {
-        $this->artisan('orchid:screen', ['name' => $this->generateNameFromMethod()])
-            ->expectsOutputToContain('Screen created successfully.')
-            ->assertExitCode(0);
-    }
+        $this->artisan($command, ['name' => $file])
+            ->expectsOutputToContain($name)
+            ->assertOk();
 
-    public function testArtisanOrchidRows(): void
-    {
-        $this->artisan('orchid:rows', ['name' => $this->generateNameFromMethod()])
-            ->expectsOutputToContain('Rows created successfully.')
-            ->assertExitCode(0);
-    }
-
-    public function testArtisanOrchidFilter(): void
-    {
-        $this->artisan('orchid:filter', ['name' => $this->generateNameFromMethod()])
-            ->expectsOutputToContain('Filter created successfully.')
-            ->assertExitCode(0);
-    }
-
-    public function testArtisanOrchidSelection(): void
-    {
-        $this->artisan('orchid:selection', ['name' => $this->generateNameFromMethod()])
-            ->expectsOutputToContain('Selection created successfully.')
-            ->assertExitCode(0);
-    }
-
-    public function testArtisanOrchidListener(): void
-    {
-        $this->artisan('orchid:listener', ['name' => $this->generateNameFromMethod()])
-            ->expectsOutputToContain('Listener created successfully.')
-            ->assertExitCode(0);
-    }
-
-    public function testArtisanOrchidPresenter(): void
-    {
-        $this->artisan('orchid:presenter', ['name' => $this->generateNameFromMethod()])
-            ->expectsOutputToContain('Presenter created successfully.')
-            ->assertExitCode(0);
+        $this->assertFileExists(app_path($path.$file.'.php'));
     }
 
     public function testArtisanOrchidAdmin(): void
@@ -103,19 +79,12 @@ class ArtisanTest extends TestConsoleCase
     {
         $this->artisan('orchid:install')
             ->expectsOutputToContain("To start the embedded server, run 'artisan serve'")
-            ->assertExitCode(0);
+            ->assertOk();
     }
 
     public function testArtisanOrchidLink(): void
     {
         $this->artisan('orchid:publish')
-            ->assertExitCode(0);
-    }
-
-    public function testArtisanOrchidTabMenu(): void
-    {
-        $this->artisan('orchid:tab-menu', ['name' => $this->generateNameFromMethod()])
-            ->expectsOutputToContain('TabMenu created successfully.')
-            ->assertExitCode(0);
+            ->assertOk();
     }
 }

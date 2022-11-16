@@ -107,14 +107,12 @@ class DashboardTest extends TestUnitCase
      */
     public function testIsMacro($name = 'customMarcoName'): void
     {
-        Dashboard::macro('returnNameMacroFunction', function (string $test) {
-            return $test;
-        });
+        Dashboard::macro('returnNameMacroFunction', fn (string $test) => $test);
 
         $this->assertEquals(Dashboard::returnNameMacroFunction($name), $name);
     }
 
-    public function testRegisterMenuElement():void
+    public function testRegisterMenuElement(): void
     {
         $dashboard = new Dashboard();
 
@@ -128,7 +126,7 @@ class DashboardTest extends TestUnitCase
         $this->assertTrue(Str::of($view)->after('Item 2')->contains('Item 1'));
     }
 
-    public function testAddMenuSubElements():void
+    public function testAddMenuSubElements(): void
     {
         $dashboard = new Dashboard();
 

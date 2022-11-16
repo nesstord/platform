@@ -38,9 +38,7 @@ class MetricsTest extends TestUnitCase
             ],
         ], $group->toChart());
 
-        $namedLabel = $group->toChart(static function (bool $title) {
-            return $title ? 'Enabled' : 'Disabled';
-        });
+        $namedLabel = $group->toChart(static fn (bool $title) => $title ? 'Enabled' : 'Disabled');
 
         $this->assertSame([
             [
@@ -130,8 +128,8 @@ class MetricsTest extends TestUnitCase
         $period = User::minByDays('id', $start, $end);
 
         // Stitch selection depends on database and driver
-        $this->assertContains($period->pluck('value')->first(), [1, '1',]);
-        $this->assertContains($period->pluck('value')->last(), [6, '6',]);
+        $this->assertContains($period->pluck('value')->first(), [1, '1']);
+        $this->assertContains($period->pluck('value')->last(), [6, '6']);
 
         $this->assertEquals($start->toDateString(), $period->pluck('label')->first());
         $this->assertEquals($end->toDateString(), $period->pluck('label')->last());
@@ -211,13 +209,13 @@ class MetricsTest extends TestUnitCase
         $period = User::sumByDays('id', $start)->showDaysOfWeek()->toChart('Users');
 
         collect([
-            "Monday",
-            "Tuesday",
-            "Wednesday",
-            "Thursday",
-            "Friday",
-            "Saturday",
-            "Sunday",
+            'Monday',
+            'Tuesday',
+            'Wednesday',
+            'Thursday',
+            'Friday',
+            'Saturday',
+            'Sunday',
         ])->each(function (string $value) use ($period) {
             $this->assertContains($value, $period['labels']);
         });
@@ -228,13 +226,13 @@ class MetricsTest extends TestUnitCase
         $period = User::sumByDays('id', $start)->showDaysOfWeek()->toChart('Users');
 
         collect([
-            "Понедельник",
-            "Вторник",
-            "Среда",
-            "Четверг",
-            "Пятница",
-            "Суббота",
-            "Воскресенье",
+            'Понедельник',
+            'Вторник',
+            'Среда',
+            'Четверг',
+            'Пятница',
+            'Суббота',
+            'Воскресенье',
         ])->each(function (string $value) use ($period) {
             $this->assertContains($value, $period['labels']);
         });

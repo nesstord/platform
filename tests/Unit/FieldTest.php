@@ -139,9 +139,7 @@ class FieldTest extends TestUnitCase
     {
         $collect = collect(range(0, 10000));
 
-        $fields = $collect->map(function ($value) {
-            return (new Field())->set('value', $value)->getId();
-        })->unique();
+        $fields = $collect->map(fn ($value) => (new Field())->set('value', $value)->getId())->unique();
 
         $this->assertEquals($fields->count(), $collect->count());
 
@@ -190,35 +188,34 @@ class FieldTest extends TestUnitCase
             'parent.child.grandchild' => 'testError',
         ])->render();
 
-
         $this->assertInstanceOf(View::class, $view);
         $this->assertStringContainsString('testError', $html);
         $this->assertStringContainsString('parent[child][grandchild][]', $html);
     }
 
-    public function testIntegerOldName(): void
+    public function testOldName(): void
     {
         Session::start();
 
         Session::put('_old_input', [
-            'numeric' => "1",
+            'name' => "The heart of Seoul's nightlife",
         ]);
 
         request()->setLaravelSession(session());
 
-        $this->assertSame(1, Input::make('numeric')->getOldValue());
+        $this->assertSame("The heart of Seoul's nightlife", Input::make('name')->getOldValue());
     }
 
-    public function testFloatOldName(): void
+    public function testNumericOldName(): void
     {
         Session::start();
 
         Session::put('_old_input', [
-            'numeric' => "1.1",
+            'numeric' => '3.141',
         ]);
 
         request()->setLaravelSession(session());
 
-        $this->assertSame(1.1, Input::make('numeric')->getOldValue());
+        $this->assertSame('3.141', Input::make('numeric')->getOldValue());
     }
 }

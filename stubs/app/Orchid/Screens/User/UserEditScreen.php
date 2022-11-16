@@ -171,9 +171,7 @@ class UserEditScreen extends Screen
         ]);
 
         $permissions = collect($request->get('permissions'))
-            ->map(function ($value, $key) {
-                return [base64_decode($key) => $value];
-            })
+            ->map(fn ($value, $key) => [base64_decode($key) => $value])
             ->collapse()
             ->toArray();
 
@@ -199,7 +197,6 @@ class UserEditScreen extends Screen
      * @throws \Exception
      *
      * @return \Illuminate\Http\RedirectResponse
-     *
      */
     public function remove(User $user)
     {
